@@ -163,7 +163,12 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
               <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             </div>
-            <span className="text-yellow-300 text-sm font-medium ml-4">Zama Survey Terminal</span>
+            <div className="flex items-center space-x-2 ml-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-yellow-300">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-yellow-300 text-sm font-medium">Zama Survey Terminal</span>
+            </div>
           </div>
           <div className="text-yellow-400 text-xs font-mono">FHEVM</div>
         </div>
