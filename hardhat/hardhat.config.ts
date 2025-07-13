@@ -1,6 +1,7 @@
 import { HardhatUserConfig, vars } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@fhevm/hardhat-plugin";
+import "hardhat-deploy";
 
 const SEPOLIA_RPC_URL = vars.get("SEPOLIA_RPC_URL", "");
 const PRIVATE_KEY = vars.get("PRIVATE_KEY", "");
@@ -13,6 +14,11 @@ const config: HardhatUserConfig = {
         enabled: true,
         runs: 200,
       },
+    },
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0,
     },
   },
   networks: {

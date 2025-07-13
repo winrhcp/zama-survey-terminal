@@ -1,37 +1,23 @@
-const { ethers } = require("hardhat");
+import { DeployFunction } from "hardhat-deploy/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-async function main() {
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { deployer } = await hre.getNamedAccounts();
+  const { deploy } = hre.deployments;
+
   console.log("Deploying ZamaSurvey contract...");
+  console.log("Deploying with account:", deployer);
 
-  // Get the deployer account
-  const [deployer] = await ethers.getSigners();
-  console.log("Deploying with account:", deployer.address);
-
-  // Get account balance
-  const balance = await ethers.provider.getBalance(deployer.address);
-  console.log("Account balance:", ethers.formatEther(balance), "ETH");
-
-  // Deploy the contract
-  const ZamaSurvey = await ethers.getContractFactory("ZamaSurvey");
-  const zamaSurvey = await ZamaSurvey.deploy(deployer.address);
-
-  await zamaSurvey.waitForDeployment();
-  const contractAddress = await zamaSurvey.getAddress();
-
-  console.log("ZamaSurvey deployed to:", contractAddress);
-  console.log("Owner set to:", deployer.address);
-
-  return contractAddress;
-}
-
-main()
-  .then((address) => {
-    console.log(`\nDeployment successful!`);
-    console.log(`Contract address: ${address}`);
-    console.log(`Update this address in src/App.tsx`);
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error("Deployment failed:", error);
-    process.exit(1);
+  const deployedZamaSurvey = await deploy("ZamaSurvey", {
+    from: deployer,
+    args: [deployer],
+    log: true,
   });
+
+  console.log(`ZamaSurvey contract: `, deployedZamaSurvey.address);
+  console.log(`Update this address in src/App.tsx`);
+};
+
+export default func;
+func.id = "deploy_zamaSurvey";
+func.tags = ["ZamaSurvey"];

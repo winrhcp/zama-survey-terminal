@@ -29,6 +29,7 @@
     "@typescript-eslint/parser": "^8.36.0",
     "eslint": "^9.31.0",
     "hardhat": "^2.25.0",
+    "hardhat-deploy": "^1.0.4",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "solhint": "^6.0.0",
