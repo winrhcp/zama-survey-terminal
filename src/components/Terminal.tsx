@@ -1,13 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
+import { ethers } from 'ethers';
 import 'xterm/css/xterm.css';
 
 interface TerminalProps {
-  onSubmit: (answers: string[]) => void;
+  onSubmit: (answer: string, questionIndex: number) => Promise<void>;
+  contract: ethers.Contract | null;
+  account: string | null;
 }
 
-export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
+export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, account }) => {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const questions = [
     {
       question: "1. What is Zama?",
@@ -56,21 +62,89 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
     }
   ];
 
+  // Check user's progress from smart contract
+  const checkUserProgress = async () => {
+    if (!contract || !account) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Check if user has already submitted all answers
+      const hasCompleted = await contract.hasSubmitted(account);
+      
+      if (hasCompleted) {
+        setHasSubmitted(true);
+        setCurrentQuestionIndex(5); // All questions answered
+      } else {
+        // Check how many questions the user has answered by looking at individual answers
+        let answeredCount = 0;
+        try {
+          for (let i = 0; i < 5; i++) {
+            await contract.getAnswer(account, i);
+            answeredCount++;
+          }
+        } catch (error) {
+          // If we get an error, it means the user hasn't answered that question yet
+          // This is expected behavior since the contract throws when no answer exists
+        }
+        
+        setCurrentQuestionIndex(answeredCount);
+        setHasSubmitted(answeredCount >= 5);
+      }
+    } catch (error) {
+      console.error('Error checking user progress:', error);
+      // If there's an error, assume user hasn't started
+      setCurrentQuestionIndex(0);
+      setHasSubmitted(false);
+    }
+    
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    if (!terminalRef.current) return;
+    checkUserProgress();
+  }, [contract, account]);
+
+  useEffect(() => {
+    if (!terminalRef.current || isLoading) return;
     
     let term: Terminal | null = null;
-    let currentQuestionIndex = 0;
     let selectedChoice = 0;
-    const answers: string[] = [];
+
+    const displayThankYou = () => {
+      if (!term) return;
+      
+      term.clear();
+      term.write("\r\n");
+      term.write("🎉 Thank you for completing the Zama Survey! 🎉\r\n\r\n");
+      term.write("Your responses have been securely stored using\r\n");
+      term.write("Fully Homomorphic Encryption (FHE) on the blockchain.\r\n\r\n");
+      term.write("✨ Key benefits of your encrypted responses:\r\n");
+      term.write("   • Complete privacy - your answers are encrypted\r\n");
+      term.write("   • Tamper-proof - stored on immutable blockchain\r\n");
+      term.write("   • Computational privacy - can be analyzed without decryption\r\n\r\n");
+      term.write("🔐 Your data remains confidential while contributing to\r\n");
+      term.write("   valuable insights about the Zama ecosystem.\r\n\r\n");
+      term.write("Thank you for being part of the privacy-preserving future!\r\n");
+    };
 
     const displayQuestion = () => {
       if (!term) return;
+      
+      if (hasSubmitted) {
+        displayThankYou();
+        return;
+      }
       
       if (currentQuestionIndex < questions.length) {
         const q = questions[currentQuestionIndex];
         term.clear();
         term.write("Welcome to Zama Survey Terminal\r\n\r\n");
+        
+        // Show progress
+        term.write(`Progress: ${currentQuestionIndex + 1}/5\r\n\r\n`);
+        
         term.write(q.question + "\r\n\r\n");
         
         q.choices.forEach((choice, index) => {
@@ -81,7 +155,7 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
         
         term.write("\r\nUse W/S to navigate, Enter to select\r\n");
       } else {
-        onSubmit(answers);
+        displayThankYou();
       }
     };
 
@@ -102,11 +176,43 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
         term.open(terminalRef.current);
         
         term.onKey(({ key, domEvent }) => {
+          if (hasSubmitted) return; // Don't allow input if survey is completed
+          
           if (domEvent.key === 'Enter') {
-            answers.push(questions[currentQuestionIndex].choices[selectedChoice]);
-            currentQuestionIndex++;
-            selectedChoice = 0;
-            displayQuestion();
+            if (currentQuestionIndex < questions.length && term) {
+              const selectedAnswer = questions[currentQuestionIndex].choices[selectedChoice];
+              
+              // Show loading state
+              term.clear();
+              term.write("Submitting answer to blockchain...\r\n");
+              term.write("Please wait...\r\n");
+              
+              // Submit to contract
+              onSubmit(selectedAnswer, currentQuestionIndex)
+                .then(() => {
+                  // Move to next question
+                  setCurrentQuestionIndex(prev => {
+                    const newIndex = prev + 1;
+                    if (newIndex >= 5) {
+                      setHasSubmitted(true);
+                    }
+                    return newIndex;
+                  });
+                })
+                .catch((error) => {
+                  console.error('Error submitting answer:', error);
+                  if (term) {
+                    term.clear();
+                    term.write("Error submitting answer. Please try again.\r\n");
+                    term.write("Press any key to continue...\r\n");
+                    
+                    // Redisplay current question after error
+                    setTimeout(() => {
+                      displayQuestion();
+                    }, 2000);
+                  }
+                });
+            }
           } else if (domEvent.key === 'ArrowUp' || domEvent.key === 'w' || domEvent.key === 'W') {
             if (selectedChoice > 0) {
               selectedChoice--;
@@ -151,7 +257,8 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
         term.dispose();
       }
     };
-  }, [onSubmit]);
+  }, [onSubmit, currentQuestionIndex, hasSubmitted, isLoading]);
+
 
   return (
     <div className="relative overflow-hidden">

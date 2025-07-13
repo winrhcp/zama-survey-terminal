@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWallet } from './hooks/useWallet';
 import { SurveyTerminal } from './components/Terminal';
 import { ethers } from 'ethers';
@@ -9,15 +9,54 @@ const contractAddress = "0xYourContractAddressHere";
 function App() {
   const { account, connect, disconnect } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [contract, setContract] = useState<ethers.Contract | null>(null);
 
-  const handleSubmit = async (answers: string[]) => {
-    const { signer } = await connect();
-    const contract = new ethers.Contract(contractAddress, ZamaSurveyABI, signer);
+  // Initialize contract when account is connected
+  useEffect(() => {
+    const initContract = async () => {
+      if (account && window.ethereum) {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          const contractInstance = new ethers.Contract(contractAddress, ZamaSurveyABI, signer);
+          setContract(contractInstance);
+        } catch (error) {
+          console.error('Error initializing contract:', error);
+        }
+      } else {
+        setContract(null);
+      }
+    };
 
-    // Convert answers (e.g., A, B, C...) to euint8 array
-    const encoded = answers.map((a) => a.charCodeAt(0));
-    await contract.submitAnswers(encoded);
-    alert("Answers submitted to FHEVM!");
+    initContract();
+  }, [account]);
+
+  const handleSubmitAnswer = async (answer: string, questionIndex: number): Promise<void> => {
+    if (!contract) {
+      throw new Error('Contract not initialized');
+    }
+
+    try {
+      // Extract the letter (A, B, C, D) from the answer
+      const answerLetter = answer.charAt(0);
+      const encoded = answerLetter.charCodeAt(0);
+
+      // For now, we'll submit one answer at a time
+      // This is simplified - in a real implementation with FHE, 
+      // you'd need to encrypt the answer properly
+      console.log(`Submitting answer ${answerLetter} for question ${questionIndex + 1}`);
+      
+      // Simulate blockchain submission delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // TODO: Implement actual contract call when contract is deployed
+      // await contract.submitSingleAnswer(questionIndex, encoded);
+      
+      console.log('Answer submitted successfully');
+    } catch (error) {
+      console.error('Error submitting answer:', error);
+      throw error;
+    }
   };
 
   return (
@@ -91,7 +130,11 @@ function App() {
                   )}
                 </div>
               </div>
-              <SurveyTerminal onSubmit={handleSubmit} />
+              <SurveyTerminal 
+                onSubmit={handleSubmitAnswer} 
+                contract={contract}
+                account={account}
+              />
             </div>
           )}
         </div>

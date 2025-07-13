@@ -16,7 +16,13 @@
       "Bash(taskkill:*)",
       "Bash(cmd /c:*)",
       "Bash(set PORT=3001)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx hardhat:*)",
+      "WebFetch(domain:docs.zama.ai)",
+      "WebFetch(domain:docs.openzeppelin.com)",
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": []
   }

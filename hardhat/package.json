@@ -1,0 +1,40 @@
+{
+  "name": "hardhat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf cache artifacts typechain-types && npx hardhat typechain",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "lint": "npm run lint:sol && npm run lint:ts",
+    "lint:sol": "npx solhint contracts/**/*.sol",
+    "lint:ts": "npx eslint . --ext .js,.ts",
+    "prettier:check": "npx prettier --check .",
+    "prettier:write": "npx prettier --write .",
+    "typechain": "npx hardhat typechain",
+    "deploy:sepolia": "npx hardhat run scripts/deploy.ts --network sepolia"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@fhevm/hardhat-plugin": "^0.0.1-0",
+    "@fhevm/solidity": "0.7.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts-confidential": "0.2.0-rc.0",
+    "@types/node": "^18.19.118",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "eslint": "^9.31.0",
+    "hardhat": "^2.25.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "solhint": "^6.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0"
+  }
+}
