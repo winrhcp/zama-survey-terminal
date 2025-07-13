@@ -85,41 +85,65 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit }) => {
       }
     };
 
-    try {
-      term = new Terminal({
-        cols: 80,
-        rows: 20,
-        theme: {
-          background: 'transparent',
-          foreground: '#fbbf24',
-          cursor: '#f59e0b'
-        }
-      });
-
-      term.open(terminalRef.current);
+    const initializeTerminal = () => {
+      if (!terminalRef.current || term) return;
       
-      term.onKey(({ key, domEvent }) => {
-        if (domEvent.key === 'Enter') {
-          answers.push(questions[currentQuestionIndex].choices[selectedChoice]);
-          currentQuestionIndex++;
-          selectedChoice = 0;
-          displayQuestion();
-        } else if (domEvent.key === 'ArrowUp' || domEvent.key === 'w' || domEvent.key === 'W') {
-          if (selectedChoice > 0) {
-            selectedChoice--;
-            displayQuestion();
+      try {
+        term = new Terminal({
+          cols: 80,
+          rows: 20,
+          theme: {
+            background: 'transparent',
+            foreground: '#fbbf24',
+            cursor: '#f59e0b'
           }
-        } else if (domEvent.key === 'ArrowDown' || domEvent.key === 's' || domEvent.key === 'S') {
-          if (selectedChoice < questions[currentQuestionIndex]?.choices.length - 1) {
-            selectedChoice++;
+        });
+
+        term.open(terminalRef.current);
+        
+        term.onKey(({ key, domEvent }) => {
+          if (domEvent.key === 'Enter') {
+            answers.push(questions[currentQuestionIndex].choices[selectedChoice]);
+            currentQuestionIndex++;
+            selectedChoice = 0;
             displayQuestion();
+          } else if (domEvent.key === 'ArrowUp' || domEvent.key === 'w' || domEvent.key === 'W') {
+            if (selectedChoice > 0) {
+              selectedChoice--;
+              displayQuestion();
+            }
+          } else if (domEvent.key === 'ArrowDown' || domEvent.key === 's' || domEvent.key === 'S') {
+            if (selectedChoice < questions[currentQuestionIndex]?.choices.length - 1) {
+              selectedChoice++;
+              displayQuestion();
+            }
           }
+        });
+
+        displayQuestion();
+      } catch (error) {
+        console.error('Terminal failed:', error);
+      }
+    };
+
+    // Wait for container to have dimensions
+    const container = terminalRef.current;
+    if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+      const observer = new ResizeObserver(() => {
+        if (container.offsetWidth > 0 && container.offsetHeight > 0) {
+          observer.disconnect();
+          initializeTerminal();
         }
       });
-
-      displayQuestion();
-    } catch (error) {
-      console.error('Terminal failed:', error);
+      observer.observe(container);
+      return () => {
+        observer.disconnect();
+        if (term) {
+          term.dispose();
+        }
+      };
+    } else {
+      initializeTerminal();
     }
 
     return () => {
