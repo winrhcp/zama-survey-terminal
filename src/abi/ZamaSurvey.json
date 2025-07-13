@@ -1,0 +1,39 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "euint8[5]",
+        "name": "answers",
+        "type": "tuple[5]"
+      }
+    ],
+    "name": "submitAnswers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAnswer",
+    "outputs": [
+      {
+        "internalType": "euint8",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
