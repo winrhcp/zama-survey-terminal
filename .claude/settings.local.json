@@ -4,7 +4,19 @@
       "Bash(node:*)",
       "mcp__ide__getDiagnostics",
       "Bash(npm start)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm ls:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(del package-lock.json)",
+      "Bash(powershell:*)",
+      "WebFetch(domain:dev.zentry.com)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c:*)",
+      "Bash(set PORT=3001)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }
