@@ -2,17 +2,17 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\projects-win\\zama-survey-terminal\\hardhat\\contracts\\ZamaSurvey.sol": {
-      "lastModificationDate": 1752420986688,
-      "contentHash": "e63d906187568788fe1d9f5622f4b19b",
+      "lastModificationDate": 1752775271089,
+      "contentHash": "6ddf59e031830a20eef2226611eaa1ec",
       "sourceName": "contracts/ZamaSurvey.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -20,18 +20,26 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },
       "imports": [
         "@fhevm/solidity/lib/FHE.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@fhevm/solidity/config/ZamaConfig.sol"
       ],
       "versionPragmas": [
         "^0.8.24"
@@ -47,11 +55,11 @@
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -59,12 +67,19 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },
@@ -85,11 +100,11 @@
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -97,12 +112,19 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },
@@ -127,11 +149,11 @@
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -139,12 +161,19 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },
@@ -163,11 +192,11 @@
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -175,12 +204,19 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },
@@ -197,11 +233,11 @@
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -209,12 +245,19 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },
@@ -238,11 +281,11 @@
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -250,12 +293,109 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
               ],
               "": [
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": []
+    },
+    "D:\\projects-win\\zama-survey-terminal\\hardhat\\node_modules\\@fhevm\\solidity\\config\\ZamaConfig.sol": {
+      "lastModificationDate": 1752420477869,
+      "contentHash": "b8e3fc0f01e42102139437b8e51ec4e4",
+      "sourceName": "@fhevm/solidity/config/ZamaConfig.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@zama-fhe/oracle-solidity/address/ZamaOracleAddress.sol",
+        "../lib/FHE.sol",
+        "../lib/Impl.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "EthereumConfig",
+        "SepoliaConfig",
+        "ZamaConfig"
+      ]
+    },
+    "D:\\projects-win\\zama-survey-terminal\\hardhat\\node_modules\\@zama-fhe\\oracle-solidity\\address\\ZamaOracleAddress.sol": {
+      "lastModificationDate": 1752424496155,
+      "contentHash": "fcc6e6cc319c7f6749d74ea1f40824e6",
+      "sourceName": "@zama-fhe/oracle-solidity/address/ZamaOracleAddress.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
           }
         }
       },

@@ -23,7 +23,9 @@
       "Bash(mkdir:*)",
       "Bash(find:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(npm view:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

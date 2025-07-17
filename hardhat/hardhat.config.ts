@@ -1,12 +1,14 @@
-import { HardhatUserConfig, vars } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "@fhevm/hardhat-plugin";
-import "hardhat-deploy";
+// require("@fhevm/hardhat-plugin");
+require("@nomicfoundation/hardhat-toolbox");
+require("hardhat-deploy");
+require("dotenv").config();
 
-const SEPOLIA_RPC_URL = vars.get("SEPOLIA_RPC_URL", "");
-const PRIVATE_KEY = vars.get("PRIVATE_KEY", "");
+const { HardhatUserConfig } = require("hardhat/config");
 
-const config: HardhatUserConfig = {
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+
+const config = {
   solidity: {
     version: "0.8.24",
     settings: {
@@ -33,7 +35,12 @@ const config: HardhatUserConfig = {
       ],
     },
     sepolia: {
-      url: SEPOLIA_RPC_URL || "https://sepolia.infura.io/v3/YOUR_INFURA_KEY",
+      url: SEPOLIA_RPC_URL || "https://rpc2.sepolia.org",
+      chainId: 11155111,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
+    zama: {
+      url: SEPOLIA_RPC_URL || "https://1rpc.io/sepolia",
       chainId: 11155111,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },

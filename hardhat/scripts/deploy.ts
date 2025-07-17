@@ -1,23 +1,27 @@
-import { DeployFunction } from "hardhat-deploy/types";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+const { ethers } = require("hardhat");
 
-const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
-
+async function main() {
   console.log("Deploying ZamaSurvey contract...");
-  console.log("Deploying with account:", deployer);
+  
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying with account:", deployer.address);
+  
+  const balance = await ethers.provider.getBalance(deployer.address);
+  console.log("Account balance:", ethers.formatEther(balance), "ETH");
+  
+  const ZamaSurvey = await ethers.getContractFactory("ZamaSurvey");
+  const zamaSurvey = await ZamaSurvey.deploy(deployer.address);
+  
+  await zamaSurvey.waitForDeployment();
+  const contractAddress = await zamaSurvey.getAddress();
+  
+  console.log("ZamaSurvey contract deployed to:", contractAddress);
+  console.log("Update this address in src/App.tsx");
+}
 
-  const deployedZamaSurvey = await deploy("ZamaSurvey", {
-    from: deployer,
-    args: [deployer],
-    log: true,
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
   });
-
-  console.log(`ZamaSurvey contract: `, deployedZamaSurvey.address);
-  console.log(`Update this address in src/App.tsx`);
-};
-
-export default func;
-func.id = "deploy_zamaSurvey";
-func.tags = ["ZamaSurvey"];

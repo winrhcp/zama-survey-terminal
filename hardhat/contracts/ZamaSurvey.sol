@@ -3,8 +3,9 @@ pragma solidity ^0.8.24;
 
 import {FHE, externalEuint8, ebool, euint8} from "@fhevm/solidity/lib/FHE.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
-contract ZamaSurvey is Ownable {
+contract ZamaSurvey is Ownable, SepoliaConfig {
     using FHE for *;
 
     struct Survey {
@@ -31,6 +32,10 @@ contract ZamaSurvey is Ownable {
         // Convert external encrypted inputs to internal encrypted types
         for (uint i = 0; i < 5; i++) {
             encryptedAnswers[i] = answerInputs[i].fromExternal(inputProofs[i]);
+            
+            // Grant FHE permissions
+            FHE.allowThis(encryptedAnswers[i]);
+            FHE.allow(encryptedAnswers[i], msg.sender);
         }
         
         userSurveys[msg.sender] = Survey({
@@ -65,4 +70,28 @@ contract ZamaSurvey is Ownable {
     function canViewOwnAnswers(address user) public view returns (bool) {
         return hasSubmitted[user] && msg.sender == user;
     }
+
+    // Note: Decryption functions require FHEVM plugin and proper environment setup
+    // These functions are commented out until plugin compatibility is resolved
+    
+    /*
+    // Decrypt answer for authorized user (only their own answers)
+    function decryptAnswer(uint256 index) public view returns (uint8) {
+        require(index < 5, "Invalid answer index");
+        require(hasSubmitted[msg.sender], "User has not submitted survey");
+        
+        return FHE.decrypt(userSurveys[msg.sender].answers[index]);
+    }
+
+    // Decrypt all answers for authorized user (only their own answers)
+    function decryptAllAnswers() public view returns (uint8[5] memory) {
+        require(hasSubmitted[msg.sender], "User has not submitted survey");
+        
+        uint8[5] memory decryptedAnswers;
+        for (uint i = 0; i < 5; i++) {
+            decryptedAnswers[i] = FHE.decrypt(userSurveys[msg.sender].answers[i]);
+        }
+        return decryptedAnswers;
+    }
+    */
 }

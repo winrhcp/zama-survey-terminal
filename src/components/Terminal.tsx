@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import 'xterm/css/xterm.css';
 
 interface TerminalProps {
-  onSubmit: (answer: string, questionIndex: number) => Promise<void>;
+  onSubmit: (answers: string[]) => Promise<void>;
   contract: ethers.Contract | null;
   account: string | null;
 }
@@ -14,6 +14,7 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [answers, setAnswers] = useState<string[]>([]);
   const questions = [
     {
       question: "1. What is Zama?",
@@ -77,20 +78,9 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
         setHasSubmitted(true);
         setCurrentQuestionIndex(5); // All questions answered
       } else {
-        // Check how many questions the user has answered by looking at individual answers
-        let answeredCount = 0;
-        try {
-          for (let i = 0; i < 5; i++) {
-            await contract.getAnswer(account, i);
-            answeredCount++;
-          }
-        } catch (error) {
-          // If we get an error, it means the user hasn't answered that question yet
-          // This is expected behavior since the contract throws when no answer exists
-        }
-        
-        setCurrentQuestionIndex(answeredCount);
-        setHasSubmitted(answeredCount >= 5);
+        // If user hasn't submitted, they are starting from the beginning
+        setCurrentQuestionIndex(0);
+        setHasSubmitted(false);
       }
     } catch (error) {
       console.error('Error checking user progress:', error);
@@ -145,7 +135,23 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
         // Show progress
         term.write(`Progress: ${currentQuestionIndex + 1}/5\r\n\r\n`);
         
+        // Show previously answered questions
+        if (answers.length > 0) {
+          term.write("Previous answers:\r\n");
+          for (let i = 0; i < currentQuestionIndex; i++) {
+            if (answers[i]) {
+              term.write(`  ${i + 1}. ${answers[i].charAt(0)}\r\n`);
+            }
+          }
+          term.write("\r\n");
+        }
+        
         term.write(q.question + "\r\n\r\n");
+        
+        // Focus the terminal after displaying the question
+        setTimeout(() => {
+          term?.focus();
+        }, 0);
         
         q.choices.forEach((choice, index) => {
           const prefix = index === selectedChoice ? "> " : "  ";
@@ -182,36 +188,47 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
             if (currentQuestionIndex < questions.length && term) {
               const selectedAnswer = questions[currentQuestionIndex].choices[selectedChoice];
               
-              // Show loading state
-              term.clear();
-              term.write("Submitting answer to blockchain...\r\n");
-              term.write("Please wait...\r\n");
+              // Store the answer
+              setAnswers(prev => {
+                const newAnswers = [...prev];
+                newAnswers[currentQuestionIndex] = selectedAnswer;
+                return newAnswers;
+              });
               
-              // Submit to contract
-              onSubmit(selectedAnswer, currentQuestionIndex)
-                .then(() => {
-                  // Move to next question
-                  setCurrentQuestionIndex(prev => {
-                    const newIndex = prev + 1;
-                    if (newIndex >= 5) {
-                      setHasSubmitted(true);
+              // Move to next question or submit all answers
+              const nextIndex = currentQuestionIndex + 1;
+              if (nextIndex >= questions.length) {
+                // All questions answered, submit to contract
+                term.clear();
+                term.write("Submitting all answers to blockchain...\r\n");
+                term.write("Please wait...\r\n");
+                
+                const allAnswers = [...answers];
+                allAnswers[currentQuestionIndex] = selectedAnswer;
+                
+                onSubmit(allAnswers)
+                  .then(() => {
+                    setHasSubmitted(true);
+                    setCurrentQuestionIndex(nextIndex);
+                  })
+                  .catch((error) => {
+                    console.error('Error submitting answers:', error);
+                    if (term) {
+                      term.clear();
+                      term.write("Error submitting answers. Please try again.\r\n");
+                      term.write("Press any key to continue...\r\n");
+                      
+                      // Redisplay current question after error
+                      setTimeout(() => {
+                        displayQuestion();
+                      }, 2000);
                     }
-                    return newIndex;
                   });
-                })
-                .catch((error) => {
-                  console.error('Error submitting answer:', error);
-                  if (term) {
-                    term.clear();
-                    term.write("Error submitting answer. Please try again.\r\n");
-                    term.write("Press any key to continue...\r\n");
-                    
-                    // Redisplay current question after error
-                    setTimeout(() => {
-                      displayQuestion();
-                    }, 2000);
-                  }
-                });
+              } else {
+                // Move to next question
+                setCurrentQuestionIndex(nextIndex);
+                // Focus will be handled by displayQuestion after state update
+              }
             }
           } else if (domEvent.key === 'ArrowUp' || domEvent.key === 'w' || domEvent.key === 'W') {
             if (selectedChoice > 0) {

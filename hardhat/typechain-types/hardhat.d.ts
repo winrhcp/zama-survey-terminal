@@ -14,6 +14,14 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "EthereumConfig",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EthereumConfig__factory>;
+    getContractFactory(
+      name: "SepoliaConfig",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SepoliaConfig__factory>;
+    getContractFactory(
       name: "FHE",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FHE__factory>;
@@ -47,6 +55,16 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.ZamaSurvey__factory>;
 
     getContractAt(
+      name: "EthereumConfig",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.EthereumConfig>;
+    getContractAt(
+      name: "SepoliaConfig",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SepoliaConfig>;
+    getContractAt(
       name: "FHE",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -88,6 +106,14 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.ZamaSurvey>;
 
     deployContract(
+      name: "EthereumConfig",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EthereumConfig>;
+    deployContract(
+      name: "SepoliaConfig",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SepoliaConfig>;
+    deployContract(
       name: "FHE",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.FHE>;
@@ -120,6 +146,16 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZamaSurvey>;
 
+    deployContract(
+      name: "EthereumConfig",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EthereumConfig>;
+    deployContract(
+      name: "SepoliaConfig",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SepoliaConfig>;
     deployContract(
       name: "FHE",
       args: any[],
