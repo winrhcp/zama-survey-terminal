@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import ZamaSurveyABI from './abi/ZamaSurvey.json';
 // import { initializeFHE } from './utils/fhe';
 
-const contractAddress = "0xF6953432aeC7BBbA3dCcD543f535665806C2AEFf";
+const contractAddress = "0x1B09FF8082D9cE06048Fab90Ce2D33a65e150Dcd";
 
 function App() {
   const { account, connect, disconnect } = useWallet();
