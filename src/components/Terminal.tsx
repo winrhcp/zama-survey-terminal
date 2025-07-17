@@ -251,7 +251,7 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
 
     // Wait for container to have dimensions
     const container = terminalRef.current;
-    if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+    if (container && (container.offsetWidth === 0 || container.offsetHeight === 0)) {
       const observer = new ResizeObserver(() => {
         if (container.offsetWidth > 0 && container.offsetHeight > 0) {
           observer.disconnect();
