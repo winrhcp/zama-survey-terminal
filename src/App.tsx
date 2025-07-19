@@ -3,7 +3,7 @@ import { useWallet } from './hooks/useWallet';
 import { SurveyTerminal } from './components/Terminal';
 import { ethers } from 'ethers';
 import ZamaSurveyABI from './abi/ZamaSurvey.json';
-// import { initializeFHE } from './utils/fhe';
+import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/web';
 
 const contractAddress = "0x1B09FF8082D9cE06048Fab90Ce2D33a65e150Dcd";
 
@@ -11,7 +11,8 @@ function App() {
   const { account, connect, disconnect } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [contract, setContract] = useState<ethers.Contract | null>(null);
-  const [fheReady, setFheReady] = useState(true); // Simplified for now
+  const [fheReady, setFheReady] = useState(false);
+  const [fheInstance, setFheInstance] = useState<any>(null);
 
   // Initialize contract and FHE when account is connected
   useEffect(() => {
@@ -23,14 +24,29 @@ function App() {
           const contractInstance = new ethers.Contract(contractAddress, ZamaSurveyABI, signer);
           setContract(contractInstance);
           
-          // FHE initialization simplified for now
+          // Initialize FHE SDK
+          console.log('Initializing FHE SDK...');
+          await initSDK();
+          
+          // Create FHE instance with Sepolia config
+          const fheConfig = {
+            ...SepoliaConfig,
+            network: window.ethereum
+          };
+          
+          const instance = await createInstance(fheConfig);
+          setFheInstance(instance);
           setFheReady(true);
+          console.log('FHE SDK initialized successfully');
+          
         } catch (error) {
           console.error('Error initializing contract or FHE:', error);
+          setFheReady(false);
         }
       } else {
         setContract(null);
-        setFheReady(true);
+        setFheInstance(null);
+        setFheReady(false);
       }
     };
 
@@ -42,7 +58,7 @@ function App() {
       throw new Error('Contract not initialized');
     }
 
-    if (!fheReady) {
+    if (!fheReady || !fheInstance) {
       throw new Error('FHE not ready');
     }
 
@@ -52,31 +68,30 @@ function App() {
       const encoded = answerLetters.map(letter => letter.charCodeAt(0));
 
       console.log('Submitting all answers:', answerLetters);
+      console.log('Encoded values:', encoded);
       
-      // For now, simulate the encryption process since we need FHEVM-compatible encryption
-      // In a real implementation, you would use the FHEVM SDK to encrypt the answers
-      console.log('Preparing encrypted answers for FHEVM...');
+      // Use the FHE instance to encrypt the answers
+      console.log('Encrypting answers with FHE SDK...');
       
-      // Mock encrypted answers format that matches the contract expectation
-      // Contract expects bytes32[5] for answerInputs and bytes[5] for inputProofs
-      const externalEuint8Array = encoded.map(() => {
-        const bytes32 = new Uint8Array(32);
-        crypto.getRandomValues(bytes32);
-        return '0x' + Array.from(bytes32).map(b => b.toString(16).padStart(2, '0')).join('');
-      });
+      // Create encrypted input for the contract
+      const input = fheInstance.createEncryptedInput(contractAddress, account);
       
-      const proofs = encoded.map(() => {
-        const proofBytes = new Uint8Array(32);
-        crypto.getRandomValues(proofBytes);
-        return '0x' + Array.from(proofBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-      });
+      // Add each encoded answer to the input
+      for (let i = 0; i < encoded.length; i++) {
+        input.add8(encoded[i]);
+      }
       
-      console.log('Mock encrypted answers prepared, calling contract...');
-      console.log('Answer inputs:', externalEuint8Array);
-      console.log('Proofs:', proofs);
+      // Encrypt the input
+      const encryptedData = await input.encrypt();
+      const encryptedAnswers = encryptedData.handles;
+      const inputProofs = [encryptedData.inputProof, encryptedData.inputProof, encryptedData.inputProof, encryptedData.inputProof, encryptedData.inputProof];
+      
+      console.log('FHE encrypted answers prepared, calling contract...');
+      console.log('Encrypted inputs:', encryptedAnswers);
+      console.log('Input proofs:', inputProofs);
       
       // Call the contract with encrypted answers
-      const tx = await contract.submitAnswers(externalEuint8Array, proofs);
+      const tx = await contract.submitAnswers(encryptedAnswers, inputProofs);
       
       console.log('Transaction submitted:', tx.hash);
       
@@ -84,10 +99,6 @@ function App() {
       await tx.wait();
       
       console.log('All answers submitted successfully to blockchain');
-      
-      // TODO: Implement actual FHEVM-compatible encryption
-      // This requires using the FHEVM SDK which provides proper encryption 
-      // that is compatible with the smart contract's expectation
     } catch (error) {
       console.error('Error submitting answers:', error);
       throw error;
