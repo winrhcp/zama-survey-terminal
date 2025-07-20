@@ -14,9 +14,9 @@ This is a privacy-preserving survey application built with React and Zama's Full
 
 ### Frontend Development
 ```bash
-npm start                 # Start React development server
-npm run build            # Build production bundle
-npm test                 # Run test suite
+npm start                 # Start React development server (uses react-app-rewired)
+npm run build            # Build production bundle (uses react-app-rewired)
+npm test                 # Run test suite (uses react-app-rewired)
 ```
 
 ### Smart Contract Development
@@ -24,6 +24,11 @@ npm test                 # Run test suite
 cd hardhat
 npm install              # Install Hardhat dependencies
 npx hardhat compile      # Compile Solidity contracts
+npx hardhat clean        # Clean cache, artifacts, and typechain types
+npx hardhat typechain    # Generate TypeScript types
+npm run lint             # Run Solidity and TypeScript linting
+npm run prettier:check   # Check code formatting
+npm run prettier:write   # Format code with Prettier
 npx hardhat run scripts/deploy.ts --network zama  # Deploy to Zama devnet
 ```
 
@@ -45,8 +50,24 @@ npx hardhat run scripts/deploy.ts --network zama  # Deploy to Zama devnet
 - Stores encrypted survey responses that remain private
 
 ### Key Dependencies
-- **Frontend**: React 19, ethers.js, xterm.js, Tailwind CSS
-- **Contract**: Hardhat, @fhevm/solidity, OpenZeppelin
+- **Frontend**: 
+  - React 19.1.0
+  - ethers.js 6.15.0
+  - xterm.js 5.3.0 + xterm-addon-fit 0.8.0
+  - Tailwind CSS 3.4.17
+  - TypeScript 4.9.5
+  - @zama-fhe/relayer-sdk 0.1.1
+  - tfhe 1.3.1
+  - react-app-rewired 2.2.1
+- **Contract**: 
+  - Hardhat 2.25.0
+  - @fhevm/solidity 0.7.0
+  - @fhevm/hardhat-plugin 0.0.1-0
+  - @openzeppelin/contracts 5.0.0
+  - @openzeppelin/contracts-confidential 0.2.0-rc.0
+  - TypeScript 5.8.3
+  - ESLint 9.31.0
+  - Prettier 3.6.2
 - **Network**: Zama devnet (https://devnet.zama.ai)
 
 ### FHE Integration
