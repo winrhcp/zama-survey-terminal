@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useWallet } from './hooks/useWallet';
 import { SurveyTerminal } from './components/Terminal';
 import { ethers } from 'ethers';
@@ -7,12 +7,16 @@ import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/we
 
 const contractAddress = "0x1B09FF8082D9cE06048Fab90Ce2D33a65e150Dcd";
 
+// Global cache for FHE SDK initialization
+let fheSDKCache: { initialized: boolean; instance: any } | null = null;
+
 function App() {
   const { account, connect, disconnect, error: walletError, isConnecting, clearError } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [fheReady, setFheReady] = useState(false);
   const [fheInstance, setFheInstance] = useState<any>(null);
+  const initializingRef = useRef(false);
 
   // Initialize contract and FHE when account is connected
   useEffect(() => {
@@ -23,6 +27,21 @@ function App() {
           const signer = await provider.getSigner();
           const contractInstance = new ethers.Contract(contractAddress, ZamaSurveyABI, signer);
           setContract(contractInstance);
+          
+          // Check if FHE SDK is already cached
+          if (fheSDKCache && fheSDKCache.initialized) {
+            console.log('Using cached FHE SDK instance');
+            setFheInstance(fheSDKCache.instance);
+            setFheReady(true);
+            return;
+          }
+          
+          // Prevent multiple simultaneous initializations
+          if (initializingRef.current) {
+            return;
+          }
+          
+          initializingRef.current = true;
           
           // Initialize FHE SDK
           console.log('Initializing FHE SDK...');
@@ -35,13 +54,23 @@ function App() {
           };
           
           const instance = await createInstance(fheConfig);
+          
+          // Cache the initialized instance
+          fheSDKCache = {
+            initialized: true,
+            instance: instance
+          };
+          
           setFheInstance(instance);
           setFheReady(true);
-          console.log('FHE SDK initialized successfully');
+          console.log('FHE SDK initialized and cached successfully');
           
         } catch (error) {
           console.error('Error initializing contract or FHE:', error);
           setFheReady(false);
+          fheSDKCache = null;
+        } finally {
+          initializingRef.current = false;
         }
       } else {
         setContract(null);
