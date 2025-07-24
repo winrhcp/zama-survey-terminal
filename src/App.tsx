@@ -8,7 +8,7 @@ import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/we
 const contractAddress = "0x1B09FF8082D9cE06048Fab90Ce2D33a65e150Dcd";
 
 function App() {
-  const { account, connect, disconnect } = useWallet();
+  const { account, connect, disconnect, error: walletError, isConnecting, clearError } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [fheReady, setFheReady] = useState(false);
@@ -133,11 +133,32 @@ function App() {
                   Connect your wallet to participate in our Fully Homomorphic Encryption survey
                 </p>
               </div>
+              {walletError && (
+                <div className="mb-6 p-4 bg-red-900/30 border border-red-500/30 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <p className="text-red-400 text-sm">{walletError}</p>
+                    <button 
+                      onClick={clearError}
+                      className="text-red-400 hover:text-red-300 ml-2"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
               <button 
-                onClick={connect} 
-                className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-black transition-all duration-300 ease-out bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl hover:from-yellow-300 hover:to-orange-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg hover:shadow-xl"
+                onClick={connect}
+                disabled={isConnecting}
+                className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-black transition-all duration-300 ease-out bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl hover:from-yellow-300 hover:to-orange-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                <span className="relative z-10">Connect MetaMask</span>
+                <span className="relative z-10">
+                  {isConnecting ? 'Connecting...' : 'Connect MetaMask'}
+                </span>
+                {isConnecting && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
               </button>
             </div>
