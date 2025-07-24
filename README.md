@@ -89,6 +89,111 @@ Add Sepolia testnet to MetaMask for Zama FHEVM:
 
 Note: This project uses Zama's FHEVM infrastructure on Sepolia, which enables fully homomorphic encryption operations on the Ethereum Sepolia testnet.
 
+## Testing
+
+### Frontend Tests
+
+The frontend uses Jest and React Testing Library for unit and integration tests.
+
+```bash
+# Run all frontend tests
+npm test
+
+# Run tests in watch mode (default)
+npm test
+
+# Run tests once and exit
+npm test -- --watchAll=false
+
+# Run tests with coverage
+npm test -- --coverage --watchAll=false
+```
+
+**Test Structure:**
+- Unit tests for React components using `@testing-library/react`
+- Mock wallet interactions for isolated testing
+- Integration tests for terminal functionality
+- Jest configuration extends `react-app` preset
+
+### Smart Contract Tests
+
+The Hardhat environment supports comprehensive smart contract testing.
+
+```bash
+cd hardhat
+
+# Run all contract tests
+npm test
+# or
+npx hardhat test
+
+# Run tests with gas reporting
+npx hardhat test --reporter gas
+
+# Run specific test file
+npx hardhat test test/ZamaSurvey.test.js
+
+# Run tests on specific network
+npx hardhat test --network localhost
+```
+
+**Test Framework:**
+- **Mocha** as test runner
+- **Chai** for assertions
+- **Hardhat Network** for blockchain simulation
+- **Waffle** for contract testing utilities
+- **Typechain** for type-safe contract interactions
+
+**FHE Testing Considerations:**
+- Mock FHE operations for unit tests
+- Test encrypted data handling carefully
+- Verify access control and permissions
+- Test decryption oracle interactions
+
+### Linting and Code Quality
+
+```bash
+# Frontend linting (automatic via react-scripts)
+npm run build  # Includes linting
+
+# Smart contract linting
+cd hardhat
+npm run lint              # Run all linting
+npm run lint:sol          # Solidity linting only
+npm run lint:ts           # TypeScript linting only
+
+# Code formatting
+npm run prettier:check    # Check formatting
+npm run prettier:write    # Fix formatting
+```
+
+### Test Coverage
+
+Generate coverage reports to ensure comprehensive testing:
+
+```bash
+# Frontend coverage
+npm test -- --coverage --watchAll=false
+
+# View coverage report
+open coverage/lcov-report/index.html
+```
+
+### Running Tests in CI/CD
+
+For automated testing in GitHub Actions or similar:
+
+```bash
+# Frontend tests (headless)
+npm test -- --watchAll=false --coverage
+
+# Smart contract tests
+cd hardhat && npm test
+
+# Full test suite
+npm test -- --watchAll=false && cd hardhat && npm test
+```
+
 ## Contributing
 
 1. Fork the repository
