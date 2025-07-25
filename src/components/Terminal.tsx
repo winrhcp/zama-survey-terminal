@@ -159,7 +159,7 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
           term!.write(prefix + style + choice + "\x1b[0m\r\n");
         });
         
-        term.write("\r\nUse W/S or Arrow keys to navigate, Enter to select\r\n");
+        term.write("\r\nW/S or ↑↓: Select • A/D or ←→: Navigate questions • Enter: Confirm\r\n");
       } else {
         displayThankYou();
       }
@@ -182,7 +182,7 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
         term.open(terminalRef.current);
         
         term.onKey(({ key, domEvent }) => {
-          if (hasSubmitted) return; // Don't allow input if survey is completed
+          if (hasSubmitted || currentQuestionIndex >= questions.length) return; // Don't allow input if survey is completed
           
           if (domEvent.key === 'Enter') {
             if (currentQuestionIndex < questions.length && term) {
@@ -239,6 +239,34 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
             if (selectedChoice < questions[currentQuestionIndex]?.choices.length - 1) {
               selectedChoice++;
               displayQuestion();
+            }
+          } else if (domEvent.key === 'ArrowLeft' || domEvent.key === 'a' || domEvent.key === 'A') {
+            // Go to previous question if not on first question
+            if (currentQuestionIndex > 0) {
+              setCurrentQuestionIndex(currentQuestionIndex - 1);
+              selectedChoice = 0; // Reset selection
+              // Set selected choice to the previously answered choice if exists
+              if (answers[currentQuestionIndex - 1]) {
+                const prevAnswer = answers[currentQuestionIndex - 1];
+                const prevChoiceIndex = questions[currentQuestionIndex - 1].choices.findIndex(choice => choice === prevAnswer);
+                if (prevChoiceIndex !== -1) {
+                  selectedChoice = prevChoiceIndex;
+                }
+              }
+            }
+          } else if (domEvent.key === 'ArrowRight' || domEvent.key === 'd' || domEvent.key === 'D') {
+            // Go to next question if answer exists for current question
+            if (currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex]) {
+              setCurrentQuestionIndex(currentQuestionIndex + 1);
+              selectedChoice = 0; // Reset selection
+              // Set selected choice to the previously answered choice if exists
+              if (answers[currentQuestionIndex + 1]) {
+                const nextAnswer = answers[currentQuestionIndex + 1];
+                const nextChoiceIndex = questions[currentQuestionIndex + 1].choices.findIndex(choice => choice === nextAnswer);
+                if (nextChoiceIndex !== -1) {
+                  selectedChoice = nextChoiceIndex;
+                }
+              }
             }
           }
         });
