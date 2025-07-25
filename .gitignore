@@ -22,3 +22,6 @@ dist/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Claude Code files
+.claude
