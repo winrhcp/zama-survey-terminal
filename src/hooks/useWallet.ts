@@ -28,7 +28,7 @@ export function useWallet() {
     // Switch to Sepolia testnet
     try {
       await provider.send("wallet_switchEthereumChain", [
-        { chainId: "11155111" } // Sepolia chainId: 11155111 (0xaa36a7)
+        { chainId: "0xaa36a7" } // Sepolia chainId: 11155111 (0xaa36a7)
       ]);
     } catch (switchError: any) {
       // This error code indicates that the chain has not been added to MetaMask
@@ -36,7 +36,7 @@ export function useWallet() {
         try {
           await provider.send("wallet_addEthereumChain", [
             {
-              chainId: "11155111",
+              chainId: "0xaa36a7",
               chainName: "Sepolia test network",
               rpcUrls: ["https://1rpc.io/sepolia"],
               nativeCurrency: {
