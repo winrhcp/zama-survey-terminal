@@ -159,7 +159,7 @@ export const SurveyTerminal: React.FC<TerminalProps> = ({ onSubmit, contract, ac
           term!.write(prefix + style + choice + "\x1b[0m\r\n");
         });
         
-        term.write("\r\nUse W/S to navigate, Enter to select\r\n");
+        term.write("\r\nUse W/S or Arrow keys to navigate, Enter to select\r\n");
       } else {
         displayThankYou();
       }
