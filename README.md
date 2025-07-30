@@ -2,6 +2,8 @@
 
 A privacy-preserving survey application built with React and Zama's Fully Homomorphic Encryption (FHE) technology. This application allows users to submit survey responses that remain encrypted on-chain, enabling privacy-preserving analytics.
 
+![Zama Survey Terminal Demo](src/img/zama-survey-terminal.png)
+
 **Live Demo**: https://zama-survey-terminal.vercel.app/
 
 ## Features
