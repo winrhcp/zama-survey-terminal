@@ -26,5 +26,7 @@ export type { IInputVerifier } from "./@fhevm/solidity/lib/Impl.sol/IInputVerifi
 export { IInputVerifier__factory } from "./factories/@fhevm/solidity/lib/Impl.sol/IInputVerifier__factory";
 export type { Ownable } from "./@openzeppelin/contracts/access/Ownable";
 export { Ownable__factory } from "./factories/@openzeppelin/contracts/access/Ownable__factory";
+export type { SimpleSurvey } from "./contracts/SimpleSurvey";
+export { SimpleSurvey__factory } from "./factories/contracts/SimpleSurvey__factory";
 export type { ZamaSurvey } from "./contracts/ZamaSurvey";
 export { ZamaSurvey__factory } from "./factories/contracts/ZamaSurvey__factory";

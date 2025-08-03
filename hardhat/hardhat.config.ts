@@ -50,7 +50,7 @@ const config = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: vars.get("ETHERSCAN_API_KEY", ""),
+    apiKey: process.env.ETHERSCAN_API_KEY || "",
   },
   typechain: {
     outDir: "typechain-types",

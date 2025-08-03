@@ -404,6 +404,51 @@
         "^0.8.24"
       ],
       "artifacts": []
+    },
+    "D:\\projects-win\\zama-survey-terminal\\hardhat\\contracts\\SimpleSurvey.sol": {
+      "lastModificationDate": 1752777839460,
+      "contentHash": "9479eaa4add977205d0d0ddaf7c4644e",
+      "sourceName": "contracts/SimpleSurvey.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "SimpleSurvey"
+      ]
     }
   }
 }

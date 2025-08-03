@@ -50,6 +50,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
     getContractFactory(
+      name: "SimpleSurvey",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SimpleSurvey__factory>;
+    getContractFactory(
       name: "ZamaSurvey",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ZamaSurvey__factory>;
@@ -100,6 +104,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Ownable>;
     getContractAt(
+      name: "SimpleSurvey",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SimpleSurvey>;
+    getContractAt(
       name: "ZamaSurvey",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -142,6 +151,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
     deployContract(
+      name: "SimpleSurvey",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SimpleSurvey>;
+    deployContract(
       name: "ZamaSurvey",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZamaSurvey>;
@@ -191,6 +204,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "SimpleSurvey",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SimpleSurvey>;
     deployContract(
       name: "ZamaSurvey",
       args: any[],
