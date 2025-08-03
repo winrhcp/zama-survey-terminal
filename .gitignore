@@ -15,6 +15,11 @@ hardhat/.env.local
 build/
 dist/
 
+# Hardhat build artifacts
+hardhat/cache/
+hardhat/artifacts/
+hardhat/typechain-types/
+
 # IDE files
 .vscode/
 .idea/
