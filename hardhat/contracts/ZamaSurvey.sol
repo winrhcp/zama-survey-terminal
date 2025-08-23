@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {FHE, externalEuint8, ebool, euint8} from "@fhevm/solidity/lib/FHE.sol";
+import {FHE, externalEuint8, externalEuint256, ebool, euint8, euint256} from "@fhevm/solidity/lib/FHE.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
@@ -10,6 +10,7 @@ contract ZamaSurvey is Ownable, SepoliaConfig {
 
     struct Survey {
         address user;
+        euint256[5] questions;
         euint8[5] answers;
         uint256 timestamp;
     }
@@ -17,36 +18,44 @@ contract ZamaSurvey is Ownable, SepoliaConfig {
     mapping(address => Survey) public userSurveys;
     mapping(address => bool) public hasSubmitted;
     
-    event SurveySubmitted(address indexed user, uint256 timestamp);
+    event SurveySubmitted(address indexed user, euint256[5] questions, uint256 timestamp);
 
     constructor(address owner) Ownable(owner) {}
 
     function submitAnswers(
+        externalEuint256[5] calldata questionInputs,
+        bytes[5] calldata questionProofs,
         externalEuint8[5] calldata answerInputs,
-        bytes[5] calldata inputProofs
+        bytes[5] calldata answerProofs
     ) external {
         require(!hasSubmitted[msg.sender], "Survey already submitted");
         
+        euint256[5] memory encryptedQuestions;
         euint8[5] memory encryptedAnswers;
         
         // Convert external encrypted inputs to internal encrypted types
         for (uint i = 0; i < 5; i++) {
-            encryptedAnswers[i] = answerInputs[i].fromExternal(inputProofs[i]);
+            // Process encrypted questions (as packed 32-byte data)
+            encryptedQuestions[i] = questionInputs[i].fromExternal(questionProofs[i]);
+            FHE.allowThis(encryptedQuestions[i]);
+            FHE.allow(encryptedQuestions[i], msg.sender);
             
-            // Grant FHE permissions
+            // Process encrypted answers
+            encryptedAnswers[i] = answerInputs[i].fromExternal(answerProofs[i]);
             FHE.allowThis(encryptedAnswers[i]);
             FHE.allow(encryptedAnswers[i], msg.sender);
         }
         
         userSurveys[msg.sender] = Survey({
             user: msg.sender,
+            questions: encryptedQuestions,
             answers: encryptedAnswers,
             timestamp: block.timestamp
         });
         
         hasSubmitted[msg.sender] = true;
         
-        emit SurveySubmitted(msg.sender, block.timestamp);
+        emit SurveySubmitted(msg.sender, encryptedQuestions, block.timestamp);
     }
 
     function getAnswer(address user, uint256 index) public view returns (euint8) {
@@ -58,6 +67,17 @@ contract ZamaSurvey is Ownable, SepoliaConfig {
     function getSurveyTimestamp(address user) public view returns (uint256) {
         require(hasSubmitted[user], "User has not submitted survey");
         return userSurveys[user].timestamp;
+    }
+
+    function getQuestion(address user, uint256 index) public view returns (euint256) {
+        require(index < 5, "Invalid question index");
+        require(hasSubmitted[user], "User has not submitted survey");
+        return userSurveys[user].questions[index];
+    }
+
+    function getAllQuestions(address user) public view returns (euint256[5] memory) {
+        require(hasSubmitted[user], "User has not submitted survey");
+        return userSurveys[user].questions;
     }
 
     function getTotalSubmissions() public view onlyOwner returns (uint256) {
